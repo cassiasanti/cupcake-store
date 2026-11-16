@@ -1,6 +1,6 @@
 # 🧁 Cupcake Store
 
-Loja virtual de cupcakes desenvolvida para o **Projeto Integrador Transdisciplinar em Engenharia de Software II**, a partir do planejamento (PIT) de **Cassia Santi — RGM 28418549**.
+Loja virtual de cupcakes desenvolvida para o **Projeto Integrador Transdisciplinar em Engenharia de Software II**, com base no planejamento (PIT) de **Cassia Santi — RGM 28418549**.
 
 Aplicação web completa com **área do cliente** (cadastro, login, vitrine com filtro por sabor, carrinho, checkout com Pix, acompanhamento e cancelamento de pedidos, painel e perfil) e **área administrativa** (dashboard, pedidos, usuários, produtos, estoque com entradas/saídas e configurações da loja).
 
