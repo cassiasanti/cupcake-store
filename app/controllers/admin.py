@@ -34,7 +34,7 @@ def dashboard():
 def orders():
     a = request.args
     rows = order_model.list_all(a.get("status", ""), a.get("q", "").strip(), a.get("sort", "recentes"),
-                                a.get("de", ""), a.get("ate", ""))
+                                a.get("de", ""), a.get("ate", ""), only_sales=a.get("vendas") == "1")
     return render_template("admin/orders.html", orders=rows, args=a)
 
 

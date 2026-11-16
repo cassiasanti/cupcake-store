@@ -1,6 +1,6 @@
 # Formulário de Teste de Usuário — Cupcake Store
 
-> Preencha um formulário por testador. Anexe capturas de tela dos erros encontrados.
+> Preencha um formulário por testador.
 > Contas de teste: cliente **cliente@email.com / Cliente@123** · admin **admin@cupcakestore.com / Admin@123** (ou crie a sua).
 
 **Nome de quem testou:** ______________________________________

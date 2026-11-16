@@ -137,7 +137,7 @@ def test_admin_stock_and_users(admin_logged, app):
 def test_admin_config(admin_logged):
     r = admin_logged.post("/admin/configuracoes/entrega", data={"delivery_is_active": "1", "delivery_price": "9,99",
                           "cancel_window_minutes": "45"}, follow_redirects=True)
-    assert "Configurações salvas" in r.get_data(as_text=True) and "9.99" in r.get_data(as_text=True)
+    assert "Configurações salvas" in r.get_data(as_text=True) and "9,99" in r.get_data(as_text=True)
 
 
 def test_admin_order_status(admin_logged, app):
@@ -156,3 +156,35 @@ def test_csrf_protection(tmp_path):
     c = app.test_client()
     r = c.post("/login", data={"email": ADMIN[0], "password": ADMIN[1]})
     assert r.status_code == 400
+
+
+# ---------------------------------------------------------- Correções do teste interno (15/11/2026)
+def test_checkout_without_address_defaults_to_pickup(client):
+    client.post("/registro", data={"first_name": "Sem", "last_name": "End", "email": "sem@end.com",
+                                   "password": "Sem@12345", "confirm": "Sem@12345"})
+    client.post("/carrinho/adicionar/1", data={"quantity": 1})
+    html = client.get("/checkout").get_data(as_text=True)
+    assert 'value="0" data-autosubmit-get checked' in html  # retirada pré-selecionada
+    html = client.get("/checkout?delivery=1").get_data(as_text=True)
+    assert "cadastre seu endereço no Perfil" in html
+
+
+def test_reset_password_field_is_hidden(admin_logged):
+    html = admin_logged.get("/admin/usuarios/2").get_data(as_text=True)
+    assert 'type="password" id="np"' in html
+
+
+def test_product_form_shows_brazilian_price(admin_logged):
+    html = admin_logged.get("/admin/produtos/1/editar").get_data(as_text=True)
+    assert 'value="9,90"' in html
+
+
+def test_sales_card_lists_same_orders_as_its_total(admin_logged):
+    c = admin_logged
+    c.post("/carrinho/adicionar/1", data={"quantity": 1})
+    c.post("/checkout", data={"payment": "pix", "delivery": "0"})       # aguardando pagamento: fora das vendas
+    c.post("/carrinho/adicionar/3", data={"quantity": 1})
+    c.post("/checkout", data={"payment": "dinheiro", "delivery": "0"})  # em preparo: conta como venda
+    assert "admin/pedidos?vendas=1" in c.get("/admin/").get_data(as_text=True)
+    html = c.get("/admin/pedidos?vendas=1").get_data(as_text=True)
+    assert "<b>#2</b>" in html and "<b>#1</b>" not in html

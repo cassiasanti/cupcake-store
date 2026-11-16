@@ -41,6 +41,9 @@
           {% if s.config.delivery_is_active %}
           <label class="option-card"><input type="radio" name="delivery" value="1" data-autosubmit-get {{ 'checked' if is_delivery }}>{{ icon('truck') }}
             <span><span class="title">Entregar no endereço</span><br><span class="small muted">Taxa {{ s.config.delivery_price|brl }}</span></span></label>
+          {% if is_delivery and not has_address %}
+          <div class="inline-alert alert-error small">{{ icon('alert') }} Para receber em casa, <a href="{{ url_for('profile.edit') }}">cadastre seu endereço no Perfil</a> ou escolha retirar na loja.</div>
+          {% endif %}
           {% endif %}
           <label class="option-card"><input type="radio" name="delivery" value="0" data-autosubmit-get {{ 'checked' if not is_delivery }}>{{ icon('store') }}
             <span><span class="title">Retirar na loja</span><br><span class="small muted">Grátis · {{ s.config.opening_hours or '' }}</span></span></label>
@@ -59,7 +62,7 @@
 
   <div class="row spread" style="margin-top:2rem">
     <a class="btn btn-dark" href="{{ url_for('cart.view') }}">Cancelar</a>
-    <button class="btn btn-success btn-lg" {{ 'disabled' if not methods }}>Finalizar</button>
+    <button class="btn btn-success btn-lg" {{ 'disabled' if not methods or (is_delivery and not has_address) }}>Finalizar</button>
   </div>
 </form>
 <script>

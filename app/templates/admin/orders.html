@@ -3,12 +3,14 @@
 {% block title %}Pedidos{% endblock %}
 {% block content %}
 <h1>Pedidos</h1>
+{% if args.get('vendas') == '1' %}<p class="inline-alert alert-info small">Mostrando os pedidos que compõem o card "Vendas" (pagos, em preparo, enviados e entregues). <a href="{{ url_for('admin.orders') }}">Ver todos</a></p>{% endif %}
 <form class="toolbar" method="get">
   <div class="field"><label class="small">Buscar</label><input class="input" name="q" value="{{ args.q or '' }}" placeholder="Cliente, e-mail ou nº"></div>
   <div class="field"><label class="small">Status</label><select name="status"><option value="">Todos</option>{% for k, v in STATUS_LABELS.items() %}<option value="{{ k }}" {{ 'selected' if args.status == k }}>{{ v }}</option>{% endfor %}</select></div>
   <div class="field"><label class="small">De</label><input class="input" type="date" name="de" value="{{ args.de or '' }}"></div>
   <div class="field"><label class="small">Até</label><input class="input" type="date" name="ate" value="{{ args.ate or '' }}"></div>
   <div class="field"><label class="small">Ordenar</label><select name="sort">{% for k, v in [('recentes','Mais recentes'),('antigos','Mais antigos'),('maior_valor','Maior valor'),('menor_valor','Menor valor'),('cliente','Cliente A-Z')] %}<option value="{{ k }}" {{ 'selected' if args.sort == k }}>{{ v }}</option>{% endfor %}</select></div>
+  {% if args.get('vendas') == '1' %}<input type="hidden" name="vendas" value="1">{% endif %}
   <button class="btn">{{ icon('search') }} Filtrar</button>
   {% if args %}<a class="btn btn-ghost" href="{{ url_for('admin.orders') }}">Limpar</a>{% endif %}
 </form>

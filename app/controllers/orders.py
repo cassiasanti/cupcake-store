@@ -26,7 +26,9 @@ def checkout():
     user = current_user()
     cfg = store_config.get()
     methods = store_config.payment_methods()
-    is_delivery = request.values.get("delivery", "1" if cfg["delivery_is_active"] else "0") == "1"
+    has_address = bool(user["address"] and user["city"] and user["postal_code"])
+    default_delivery = "1" if (cfg["delivery_is_active"] and has_address) else "0"
+    is_delivery = request.values.get("delivery", default_delivery) == "1"
     payment = request.values.get("payment", methods[0][0] if methods else "")
     if request.method == "POST":
         try:
@@ -40,7 +42,7 @@ def checkout():
         flash("Seu carrinho está vazio.", "info")
         return redirect(url_for("shop.index"))
     return render_template("orders/checkout.html", s=s, methods=methods, payment=payment,
-                           is_delivery=is_delivery, user=user)
+                           is_delivery=is_delivery, user=user, has_address=has_address)
 
 
 @bp.route("/pedidos")

@@ -34,7 +34,7 @@
   {% else %}
     <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="delivery_is_active" value="1" {{ 'checked' if cfg.delivery_is_active }}> {{ icon('truck') }} Oferecer entrega em domicílio</label>
     <div class="form-row">
-      <div class="field"><label>Taxa de entrega (R$)</label><input class="input" name="delivery_price" value="{{ '%.2f'|format(cfg.delivery_price) }}" inputmode="decimal"></div>
+      <div class="field"><label>Taxa de entrega (R$)</label><input class="input" name="delivery_price" value="{{ ('%.2f'|format(cfg.delivery_price)).replace('.', ',') }}" inputmode="decimal"></div>
       <div class="field"><label>Prazo para cancelamento (min)</label><input class="input" type="number" min="0" name="cancel_window_minutes" value="{{ cfg.cancel_window_minutes }}"><span class="hint">0 = sem limite de tempo (até o envio)</span></div>
     </div>
   {% endif %}

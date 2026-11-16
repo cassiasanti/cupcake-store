@@ -33,7 +33,7 @@ Cada teste roda num banco SQLite temporário e novo, criado a partir de `schema.
 | RNF | Rotas protegidas, acesso admin, CSRF, transições de status válidas | `test_protected_routes_redirect_to_login`, `test_client_cannot_access_admin`, `test_csrf_protection`, `test_invalid_status_transition`, `test_admin_order_status` |
 
 ## Resultado da última execução
-**65 de 65 testes aprovados.**
+**69 de 69 testes aprovados** (65 originais + 4 de regressão das correções do teste interno de 15/11/2026).
 
 | Teste | Resultado |
 |---|---|

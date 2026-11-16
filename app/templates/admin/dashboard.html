@@ -5,7 +5,7 @@
 <h1>Dashboard</h1>
 <div class="tiles" style="margin-top:1.5rem">
   <a class="tile tile-purple" href="{{ url_for('admin.orders') }}"><span class="t">{{ icon('receipt') }} Pedidos</span><span class="v">{{ stats.orders }}</span><span class="small">{{ stats.open_orders }} em andamento</span></a>
-  <a class="tile tile-blue" href="{{ url_for('admin.orders', status='entregue') }}"><span class="t">{{ icon('dollar') }} Vendas</span><span class="v">{{ stats.sales|brl }}</span><span class="small">pagas/confirmadas</span></a>
+  <a class="tile tile-blue" href="{{ url_for('admin.orders', vendas=1) }}"><span class="t">{{ icon('dollar') }} Vendas</span><span class="v">{{ stats.sales|brl }}</span><span class="small">pagas ou em andamento</span></a>
   <a class="tile tile-gray" href="{{ url_for('admin.users') }}"><span class="t">{{ icon('user') }} Usuários</span><span class="v">{{ users }}</span><span class="small">cadastrados</span></a>
   <a class="tile tile-light" href="{{ url_for('admin.products') }}"><span class="t">{{ icon('barcode') }} Produtos</span><span class="v">{{ products }}</span><span class="small">no catálogo</span></a>
 </div>

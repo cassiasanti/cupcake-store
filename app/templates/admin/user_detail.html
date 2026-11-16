@@ -36,7 +36,8 @@
         <form method="post">{{ csrf() }}<input type="hidden" name="action" value="toggle_staff"><button class="btn btn-sm btn-ghost" data-confirm="Alterar a permissão de administrador de {{ u.first_name }}?">{{ 'Remover admin' if u.is_staff else 'Tornar admin' }}</button></form></div>
       <form method="post" class="stack">{{ csrf() }}<input type="hidden" name="action" value="reset_password">
         <label class="label" for="np">Redefinir senha</label>
-        <div class="row"><input class="input" id="np" name="new_password" placeholder="Nova senha forte" style="flex:1" required><button class="btn btn-sm">Redefinir</button></div></form>
+        <div class="row"><input class="input" type="password" id="np" name="new_password" placeholder="Nova senha forte" style="flex:1" required autocomplete="new-password"><button class="btn btn-sm">Redefinir</button></div>
+        <span class="hint">Mín. 8 caracteres com maiúscula, minúscula, número e símbolo.</span></form>
     </div>
     <div class="card"><div class="card-head"><h3 style="margin:0">Pedidos ({{ orders|length }})</h3></div>
       <div class="table-wrap"><table><tbody>{% for o in orders[:8] %}<tr><td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}">#{{ o.id }}</a></td><td>{{ status(o.status) }}</td><td class="right">{{ o.total|brl }}</td></tr>{% else %}<tr><td class="muted small">Nenhum pedido.</td></tr>{% endfor %}</tbody></table></div></div>

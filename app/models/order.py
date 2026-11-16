@@ -185,7 +185,7 @@ def list_for_profile(profile_id, limit=None):
     return query(sql, (profile_id,))
 
 
-def list_all(status="", search="", sort="recentes", date_from="", date_to=""):
+def list_all(status="", search="", sort="recentes", date_from="", date_to="", only_sales=False):
     sql = """SELECT o.*, p.first_name, p.last_name, u.email,
                     (SELECT GROUP_CONCAT(quantity || 'x ' || name, ', ') FROM order_items WHERE order_id = o.id) AS items_desc
              FROM orders o JOIN profiles p ON p.id = o.profile_id JOIN users u ON u.id = p.user_id WHERE 1=1"""
@@ -193,6 +193,8 @@ def list_all(status="", search="", sort="recentes", date_from="", date_to=""):
     if status:
         sql += " AND o.status = ?"
         params.append(status)
+    if only_sales:  # mesmos pedidos que compõem o card "Vendas" do dashboard
+        sql += " AND o.status NOT IN ('cancelado','aguardando_pagamento')"
     if search:
         sql += " AND (p.first_name LIKE ? OR p.last_name LIKE ? OR u.email LIKE ? OR CAST(o.id AS TEXT) = ?)"
         params += [f"%{search}%"] * 3 + [search.lstrip("#")]
