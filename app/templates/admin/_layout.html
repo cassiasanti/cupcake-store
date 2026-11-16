@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block body %}
+<header class="admin-top">
+  <a class="brand" href="{{ url_for('admin.dashboard') }}">{{ icon('cupcake') }} {{ store.store_name }}</a>
+  <span class="tag" style="margin-left:.4rem">Admin</span>
+  <a href="{{ url_for('shop.index') }}" class="small" style="margin-left:auto">Ver loja ↗</a>
+</header>
+{% set ep = request.endpoint %}
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="account">{{ current_user.first_name }} {{ current_user.last_name }}</div>
+    <nav aria-label="Administração">
+      <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if ep == 'admin.dashboard' }}">{{ icon('clock') }} Dashboard</a>
+      <a href="{{ url_for('shop.index') }}">{{ icon('store') }} Loja</a>
+      <a href="{{ url_for('admin.orders') }}" class="{{ 'active' if ep.startswith('admin.order') }}">{{ icon('receipt') }} Pedidos</a>
+      <a href="{{ url_for('admin.users') }}" class="{{ 'active' if ep.startswith('admin.user') }}">{{ icon('user') }} Usuários</a>
+      <a href="{{ url_for('admin.products') }}" class="{{ 'active' if ep.startswith('admin.product') }}">{{ icon('barcode') }} Produtos</a>
+      <a href="{{ url_for('admin.stock') }}" class="{{ 'active' if ep in ['admin.stock','admin.movements'] }}">{{ icon('warehouse') }} Estoque</a>
+      {% if ep in ['admin.stock','admin.movements'] %}
+      <a href="{{ url_for('admin.stock') }}" class="sub {{ 'active' if ep == 'admin.stock' }}">{{ icon('warehouse') }} Gerenciar</a>
+      <a href="{{ url_for('admin.movements') }}" class="sub {{ 'active' if ep == 'admin.movements' }}">{{ icon('history') }} Movimentações</a>
+      {% endif %}
+      <a href="{{ url_for('admin.config', section='endereco') }}" class="{{ 'active' if ep == 'admin.config' }}">{{ icon('settings') }} Configurar loja</a>
+      {% if ep == 'admin.config' %}
+      <a href="{{ url_for('admin.config', section='endereco') }}" class="sub {{ 'active' if section == 'endereco' }}">{{ icon('pin') }} Endereço</a>
+      <a href="{{ url_for('admin.config', section='pagamento') }}" class="sub {{ 'active' if section == 'pagamento' }}">{{ icon('card') }} Pagamento</a>
+      <a href="{{ url_for('admin.config', section='entrega') }}" class="sub {{ 'active' if section == 'entrega' }}">{{ icon('truck') }} Entrega</a>
+      {% endif %}
+    </nav>
+    <form class="logout" method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn btn-gray btn-block">Logout</button></form>
+  </aside>
+  <main class="admin-main">{% block content %}{% endblock %}</main>
+</div>
+{% endblock %}

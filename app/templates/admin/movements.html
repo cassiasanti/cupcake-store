@@ -1,0 +1,19 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Movimentações{% endblock %}
+{% block content %}
+<h1>Movimentações</h1>
+<form class="toolbar" method="get">
+  <div class="field"><label class="small">Produto</label><select name="product_id"><option value="">Todos</option>{% for p in products %}<option value="{{ p.id }}" {{ 'selected' if args.get('product_id')|int == p.id }}>{{ p.name }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="small">Tipo</label><select name="type"><option value="">Entradas e saídas</option><option value="entrada" {{ 'selected' if args.type == 'entrada' }}>Entradas</option><option value="saida" {{ 'selected' if args.type == 'saida' }}>Saídas</option></select></div>
+  <button class="btn">{{ icon('search') }} Filtrar</button>
+</form>
+{% set ent = movements|selectattr('type','equalto','entrada')|sum(attribute='quantity') %}
+{% set sai = movements|selectattr('type','equalto','saida')|sum(attribute='quantity') %}
+<div class="grid grid-3" style="margin-bottom:1rem">
+  <div class="card kpi"><div class="l">Entradas</div><div class="v on">+{{ ent }}</div></div>
+  <div class="card kpi"><div class="l">Saídas</div><div class="v off">−{{ sai }}</div></div>
+  <div class="card kpi"><div class="l">Saldo do período</div><div class="v">{{ ent - sai }}</div></div>
+</div>
+<div class="card">{% include "admin/_movements_table.html" %}</div>
+{% endblock %}

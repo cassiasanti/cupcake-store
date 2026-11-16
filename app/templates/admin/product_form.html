@@ -1,0 +1,37 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}{{ 'Editar' if product else 'Adicionar' }} produto{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.products') }}" class="small">{{ icon('arrow-left') }} Produtos</a>
+<h1 style="margin-top:.5rem">{{ 'Editar produto' if product else 'Adicionar produto' }}</h1>
+<form method="post" enctype="multipart/form-data" class="grid grid-main">
+  {{ csrf() }}
+  <div class="card">
+    <div class="card-body">
+      <div class="field"><label for="name">Nome</label><input class="input" id="name" name="name" value="{{ form.name or '' }}" required minlength="3" placeholder="Nome do produto"></div>
+      <div class="field"><label for="description">Descrição</label><textarea class="input" id="description" name="description" required minlength="10">{{ form.description or '' }}</textarea></div>
+      <div class="field"><label for="ingredients">Ingredientes</label><textarea class="input" id="ingredients" name="ingredients" style="min-height:70px">{{ form.ingredients or '' }}</textarea></div>
+      <div class="form-row">
+        <div class="field"><label for="price">Preço (R$)</label><input class="input" id="price" name="price" value="{{ form.price or '' }}" required inputmode="decimal" placeholder="0,00"></div>
+        <div class="field"><label for="flavor">Sabor</label><select id="flavor" name="flavor">{% for f in flavors %}<option {{ 'selected' if form.flavor == f }}>{{ f }}</option>{% endfor %}</select></div>
+      </div>
+      {% if not product %}<div class="field"><label for="initial_stock">Estoque inicial</label><input class="input" type="number" min="0" id="initial_stock" name="initial_stock" value="{{ form.initial_stock or 0 }}"><span class="hint">Gera uma movimentação de entrada.</span></div>
+      {% else %}<p class="small muted">Estoque atual: <b>{{ product.current_stock }}</b> — ajuste em <a href="{{ url_for('admin.stock', product_id=product.id) }}">Estoque › Gerenciar</a>.</p>{% endif %}
+      <label class="check"><input type="checkbox" name="is_active" value="1" {{ 'checked' if (form.is_active if product else True) }}> Publicado no catálogo</label>
+    </div>
+    <div class="card-foot row spread"><a class="btn btn-gray" href="{{ url_for('admin.products') }}">Cancelar</a><button class="btn">{{ 'Salvar alterações' if product else 'Adicionar' }}</button></div>
+  </div>
+  <div class="stack">
+    <div class="card card-body">
+      <label class="label">Imagem</label>
+      <img id="preview" class="upload-preview" src="{{ (product.image if product else '/static/img/products/baunilha.svg') }}" alt="Pré-visualização" style="margin:.5rem 0">
+      <input type="file" name="image_file" accept="image/*" data-preview="#preview">
+      <div class="field" style="margin-top:.8rem"><label class="small" for="image_url">ou URL da imagem</label><input class="input" id="image_url" name="image_url" placeholder="https://..."></div>
+    </div>
+    {% if product and history %}
+    <div class="card card-body"><h3>{{ icon('history') }} Alterações</h3>
+      {% for h in history[:8] %}<div class="small" style="padding:.3rem 0;border-bottom:1px solid var(--line)"><b>{{ h.action }}</b> · {{ h.created_at|dt }} por {{ h.first_name or '—' }}<div class="muted" style="word-break:break-word">{{ h.details[:160] }}</div></div>{% endfor %}
+    </div>{% endif %}
+  </div>
+</form>
+{% endblock %}

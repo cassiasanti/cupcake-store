@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, status %}
+{% block title %}Meus pedidos{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Pedidos</h1><span class="breadcrumb"><a href="{{ url_for('shop.index') }}">Home</a> / Pedidos</span></div>
+{% if orders %}
+<div class="card table-wrap"><table>
+  <thead><tr><th>Pedido</th><th>Data</th><th>Itens</th><th>Recebimento</th><th>Pagamento</th><th>Status</th><th class="right">Total</th><th></th></tr></thead>
+  <tbody>{% for o in orders %}
+    <tr>
+      <td><b>#{{ o.id }}</b></td><td class="nowrap">{{ o.created_at|dt }}</td><td>{{ o.items_count }}</td>
+      <td>{{ 'Entrega' if o.is_delivery else 'Retirada' }}</td><td>{{ 'Pix' if o.payment_method == 'pix' else 'Dinheiro' }}</td>
+      <td>{{ status(o.status) }}</td><td class="right nowrap"><b>{{ o.total|brl }}</b></td>
+      <td class="right"><a class="btn btn-sm btn-ghost" href="{{ url_for('orders.detail', order_id=o.id) }}">Detalhes</a></td>
+    </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<div class="card empty">{{ icon('receipt') }}<h2>Você ainda não fez pedidos</h2><a class="btn" href="{{ url_for('shop.index') }}">Ir para a loja</a></div>
+{% endif %}
+{% endblock %}

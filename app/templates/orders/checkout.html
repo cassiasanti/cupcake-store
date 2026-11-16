@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Checkout</h1><span class="breadcrumb"><a href="{{ url_for('cart.view') }}">Carrinho</a> / Checkout</span></div>
+<form method="post" class="card card-body" id="checkout-form">
+  {{ csrf() }}
+  <div class="invoice-head">
+    <div><div><b>Data do Pedido:</b> <span id="today"></span></div><div class="small"><b>Cliente:</b> {{ user.first_name }} {{ user.last_name }}</div></div>
+    <div><div class="k">De</div><div>{{ s.config.store_name }}</div>
+      <div class="small" style="margin-top:.6rem"><b>Endereço:</b> {{ s.config.physical_store_address }}, {{ s.config.physical_store_city }}/{{ s.config.physical_store_state }}<br>
+        <b>Telefone:</b> {{ s.config.physical_store_phone_number }}<br><b>Email:</b> {{ s.config.physical_store_email }}</div></div>
+    <div><div class="k">Para</div><div>{{ user.first_name }} {{ user.last_name }}</div>
+      <div class="small" style="margin-top:.6rem"><b>Endereço:</b> {% if user.address %}{{ user.address }}, {{ user.city }}/{{ user.state }} {{ user.postal_code }}{% else %}<a href="{{ url_for('profile.edit') }}">cadastrar endereço</a>{% endif %}<br>
+        <b>Telefone:</b> {{ user.phone_number or '—' }}<br><b>Email:</b> {{ user.email }}</div></div>
+  </div>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Quantidade</th><th>Produto</th><th>Descrição</th><th class="right">Subtotal</th></tr></thead>
+    <tbody>{% for i in s['items'] %}
+      <tr><td>{{ loop.index }}</td><td>{{ i.quantity }}</td><td><b>{{ i.name }}</b></td><td class="muted small">{{ i.flavor }} · {{ i.item_price|brl }} un.</td><td class="right">{{ i.subtotal|brl }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+
+  <div class="grid grid-2" style="margin-top:1.6rem">
+    <div class="stack">
+      <div>
+        <div class="label" style="margin-bottom:.5rem">Formas de Pagamento</div>
+        {% if methods %}
+        <div class="option-cards">
+          {% for value, label in methods %}
+          <label class="option-card"><input type="radio" name="payment" value="{{ value }}" {{ 'checked' if value == payment }}>
+            {{ icon('pix' if value == 'pix' else 'cash') }}<span><span class="title">{{ label }}</span><br><span class="small muted">{{ 'QR Code e copia e cola gerados na hora' if value == 'pix' else 'Pague ao receber ou retirar' }}</span></span></label>
+          {% endfor %}
+        </div>
+        {% else %}<div class="inline-alert alert-error">Nenhuma forma de pagamento ativa. Contate a loja.</div>{% endif %}
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:.5rem">Receber Produto</div>
+        <div class="option-cards">
+          {% if s.config.delivery_is_active %}
+          <label class="option-card"><input type="radio" name="delivery" value="1" data-autosubmit-get {{ 'checked' if is_delivery }}>{{ icon('truck') }}
+            <span><span class="title">Entregar no endereço</span><br><span class="small muted">Taxa {{ s.config.delivery_price|brl }}</span></span></label>
+          {% endif %}
+          <label class="option-card"><input type="radio" name="delivery" value="0" data-autosubmit-get {{ 'checked' if not is_delivery }}>{{ icon('store') }}
+            <span><span class="title">Retirar na loja</span><br><span class="small muted">Grátis · {{ s.config.opening_hours or '' }}</span></span></label>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="center" style="font-size:1.1rem;margin-bottom:.6rem">Valor da Compra</div>
+      <div class="totals">
+        <div><span>Subtotal:</span><span>{{ s.subtotal|brl }}</span></div>
+        <div><span>Entrega:</span><span>{{ s.delivery|brl }}</span></div>
+        <div class="grand"><span>Total:</span><span>{{ s.total|brl }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row spread" style="margin-top:2rem">
+    <a class="btn btn-dark" href="{{ url_for('cart.view') }}">Cancelar</a>
+    <button class="btn btn-success btn-lg" {{ 'disabled' if not methods }}>Finalizar</button>
+  </div>
+</form>
+<script>
+  document.getElementById("today").textContent = new Date().toLocaleDateString("pt-BR");
+  document.querySelectorAll("[data-autosubmit-get]").forEach(r => r.addEventListener("change", () => {
+    const pay = document.querySelector("input[name=payment]:checked");
+    location.search = "?delivery=" + r.value + (pay ? "&payment=" + pay.value : "");
+  }));
+</script>
+{% endblock %}

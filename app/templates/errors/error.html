@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Erro {{ code }}{% endblock %}
+{% block content %}
+<div class="card empty" style="max-width:520px;margin:2rem auto">
+  {{ icon('alert') }}
+  <h1>{{ code }}</h1>
+  <p>{{ message }}</p>
+  <a class="btn" href="{{ url_for('shop.index') }}">Voltar para a loja</a>
+</div>
+{% endblock %}

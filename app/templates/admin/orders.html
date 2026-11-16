@@ -1,0 +1,25 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, status %}
+{% block title %}Pedidos{% endblock %}
+{% block content %}
+<h1>Pedidos</h1>
+<form class="toolbar" method="get">
+  <div class="field"><label class="small">Buscar</label><input class="input" name="q" value="{{ args.q or '' }}" placeholder="Cliente, e-mail ou nº"></div>
+  <div class="field"><label class="small">Status</label><select name="status"><option value="">Todos</option>{% for k, v in STATUS_LABELS.items() %}<option value="{{ k }}" {{ 'selected' if args.status == k }}>{{ v }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="small">De</label><input class="input" type="date" name="de" value="{{ args.de or '' }}"></div>
+  <div class="field"><label class="small">Até</label><input class="input" type="date" name="ate" value="{{ args.ate or '' }}"></div>
+  <div class="field"><label class="small">Ordenar</label><select name="sort">{% for k, v in [('recentes','Mais recentes'),('antigos','Mais antigos'),('maior_valor','Maior valor'),('menor_valor','Menor valor'),('cliente','Cliente A-Z')] %}<option value="{{ k }}" {{ 'selected' if args.sort == k }}>{{ v }}</option>{% endfor %}</select></div>
+  <button class="btn">{{ icon('search') }} Filtrar</button>
+  {% if args %}<a class="btn btn-ghost" href="{{ url_for('admin.orders') }}">Limpar</a>{% endif %}
+</form>
+<div class="card table-wrap"><table>
+  <thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Itens</th><th>Pagamento</th><th>Status</th><th class="right">Total</th><th></th></tr></thead>
+  <tbody>{% for o in orders %}
+    <tr><td><b>#{{ o.id }}</b></td><td class="nowrap small">{{ o.created_at|dt }}</td><td>{{ o.first_name }} {{ o.last_name }}<div class="small muted">{{ o.email }}</div></td>
+      <td class="small" style="max-width:260px">{{ o.items_desc }}</td><td>{{ 'Pix' if o.payment_method == 'pix' else 'Dinheiro' }}<div class="small muted">{{ 'Entrega' if o.is_delivery else 'Retirada' }}</div></td>
+      <td>{{ status(o.status) }}</td><td class="right nowrap"><b>{{ o.total|brl }}</b></td>
+      <td class="right"><a class="btn btn-sm btn-ghost" href="{{ url_for('admin.order_detail', order_id=o.id) }}">Abrir</a></td></tr>
+  {% else %}<tr><td colspan="8" class="empty">Nenhum pedido encontrado.</td></tr>{% endfor %}</tbody>
+</table></div>
+<p class="small muted">{{ orders|length }} pedido(s) · total listado {{ orders|sum(attribute='total')|brl }}</p>
+{% endblock %}

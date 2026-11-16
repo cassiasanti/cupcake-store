@@ -1,0 +1,47 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf, status %}
+{% block title %}{{ u.first_name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.users') }}" class="small">{{ icon('arrow-left') }} Usuários</a>
+<div class="row" style="margin:.5rem 0 1.25rem"><div class="avatar">{{ u.first_name[0]|upper }}</div><div><h1 style="margin:0">{{ u.first_name }} {{ u.last_name }}</h1>
+  <span class="small muted">Cadastro {{ u.created_at|dt('%d/%m/%Y') }} · último acesso {{ u.last_login|dt }}</span></div></div>
+<div class="grid grid-main">
+  <form method="post" class="card">
+    {{ csrf() }}<input type="hidden" name="action" value="profile">
+    <div class="card-head"><h2 style="margin:0">Dados cadastrais</h2></div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="field"><label>Nome</label><input class="input" name="first_name" value="{{ u.first_name }}" required></div>
+        <div class="field"><label>Sobrenome</label><input class="input" name="last_name" value="{{ u.last_name }}" required></div>
+      </div>
+      <div class="field"><label>E-mail</label><input class="input" type="email" name="email" value="{{ u.email }}" required></div>
+      <div class="field"><label>Endereço</label><input class="input" name="address" value="{{ u.address or '' }}"></div>
+      <div class="form-row">
+        <div class="field"><label>Cidade</label><input class="input" name="city" value="{{ u.city or '' }}"></div>
+        <div class="field"><label>Estado</label><input class="input" name="state" value="{{ u.state or '' }}"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>CEP</label><input class="input" name="postal_code" value="{{ u.postal_code or '' }}" data-mask="cep"></div>
+        <div class="field"><label>Telefone</label><input class="input" name="phone_number" value="{{ u.phone_number or '' }}" data-mask="phone"></div>
+      </div>
+    </div>
+    <div class="card-foot right"><button class="btn">Salvar</button></div>
+  </form>
+  <div class="stack">
+    <div class="card card-body stack">
+      <h3>Ações da conta</h3>
+      <div class="row spread"><span>Status: {% if u.is_active %}<span class="on">Ativa</span>{% else %}<span class="off">Inativa</span>{% endif %}</span>
+        <form method="post">{{ csrf() }}<input type="hidden" name="action" value="toggle_active"><button class="btn btn-sm {{ 'btn-danger' if u.is_active else 'btn-success' }}" data-confirm="{{ 'Desativar' if u.is_active else 'Ativar' }} a conta de {{ u.first_name }}?">{{ 'Desativar' if u.is_active else 'Ativar' }}</button></form></div>
+      <div class="row spread"><span>Perfil: <b>{{ 'Administrador' if u.is_staff else 'Cliente' }}</b></span>
+        <form method="post">{{ csrf() }}<input type="hidden" name="action" value="toggle_staff"><button class="btn btn-sm btn-ghost" data-confirm="Alterar a permissão de administrador de {{ u.first_name }}?">{{ 'Remover admin' if u.is_staff else 'Tornar admin' }}</button></form></div>
+      <form method="post" class="stack">{{ csrf() }}<input type="hidden" name="action" value="reset_password">
+        <label class="label" for="np">Redefinir senha</label>
+        <div class="row"><input class="input" id="np" name="new_password" placeholder="Nova senha forte" style="flex:1" required><button class="btn btn-sm">Redefinir</button></div></form>
+    </div>
+    <div class="card"><div class="card-head"><h3 style="margin:0">Pedidos ({{ orders|length }})</h3></div>
+      <div class="table-wrap"><table><tbody>{% for o in orders[:8] %}<tr><td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}">#{{ o.id }}</a></td><td>{{ status(o.status) }}</td><td class="right">{{ o.total|brl }}</td></tr>{% else %}<tr><td class="muted small">Nenhum pedido.</td></tr>{% endfor %}</tbody></table></div></div>
+    <div class="card card-body"><h3>{{ icon('history') }} Auditoria</h3>
+      {% for l in logs %}<div class="small" style="padding:.2rem 0">{{ l.created_at|dt }} · <b>{{ l.action }}</b> por {{ l.first_name or 'sistema' }}</div>{% else %}<p class="small muted">Sem registros.</p>{% endfor %}</div>
+  </div>
+</div>
+{% endblock %}

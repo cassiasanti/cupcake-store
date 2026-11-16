@@ -1,0 +1,35 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, status %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="tiles" style="margin-top:1.5rem">
+  <a class="tile tile-purple" href="{{ url_for('admin.orders') }}"><span class="t">{{ icon('receipt') }} Pedidos</span><span class="v">{{ stats.orders }}</span><span class="small">{{ stats.open_orders }} em andamento</span></a>
+  <a class="tile tile-blue" href="{{ url_for('admin.orders', status='entregue') }}"><span class="t">{{ icon('dollar') }} Vendas</span><span class="v">{{ stats.sales|brl }}</span><span class="small">pagas/confirmadas</span></a>
+  <a class="tile tile-gray" href="{{ url_for('admin.users') }}"><span class="t">{{ icon('user') }} Usuários</span><span class="v">{{ users }}</span><span class="small">cadastrados</span></a>
+  <a class="tile tile-light" href="{{ url_for('admin.products') }}"><span class="t">{{ icon('barcode') }} Produtos</span><span class="v">{{ products }}</span><span class="small">no catálogo</span></a>
+</div>
+<div class="grid grid-main">
+  <div class="card">
+    <div class="card-head"><h2 style="margin:0">Pedidos recentes</h2><a class="small" href="{{ url_for('admin.orders') }}">Ver todos</a></div>
+    <div class="table-wrap"><table><tbody>
+    {% for o in recent %}<tr><td><a href="{{ url_for('admin.order_detail', order_id=o.id) }}"><b>#{{ o.id }}</b></a></td><td>{{ o.first_name }} {{ o.last_name }}</td><td class="small muted">{{ o.created_at|dt }}</td><td>{{ status(o.status) }}</td><td class="right">{{ o.total|brl }}</td></tr>
+    {% else %}<tr><td class="empty">Nenhum pedido ainda.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  <div class="stack">
+    <div class="card card-body">
+      <h3>Vendas — últimos 7 dias</h3>
+      {% set mx = (sales|map(attribute='t')|max) if sales else 0 %}
+      {% if sales %}
+      <div class="chart">{% for d in sales %}<div class="bar" title="{{ d.t|brl }} ({{ d.n }} pedidos)"><span>{{ d.t|int }}</span><span class="b" style="height:{{ (d.t / mx * 100) if mx else 0 }}%"></span>{{ d.d[8:10] }}/{{ d.d[5:7] }}</div>{% endfor %}</div>
+      {% else %}<p class="muted small">Sem vendas no período.</p>{% endif %}
+    </div>
+    <div class="card card-body">
+      <h3>{{ icon('alert') }} Estoque baixo</h3>
+      {% for p in low_stock %}<div class="row spread small" style="padding:.3rem 0"><a href="{{ url_for('admin.stock', product_id=p.id) }}">{{ p.name }}</a><span class="stock-pill low">{{ p.current_stock }}</span></div>
+      {% else %}<p class="muted small">Todos os produtos com estoque saudável.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

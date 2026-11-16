@@ -1,0 +1,21 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf, password_field %}
+{% block title %}Adicionar usuário{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.users') }}" class="small">{{ icon('arrow-left') }} Usuários</a>
+<h1 style="margin-top:.5rem">Adicionar usuário</h1>
+<form method="post" class="card" style="max-width:640px" data-match="password,confirm">
+  {{ csrf() }}
+  <div class="card-body">
+    <div class="form-row">
+      <div class="field"><label for="first_name">Nome</label><input class="input" id="first_name" name="first_name" value="{{ form.first_name }}" required></div>
+      <div class="field"><label for="last_name">Sobrenome</label><input class="input" id="last_name" name="last_name" value="{{ form.last_name }}" required></div>
+    </div>
+    <div class="field"><label for="email">E-mail</label><input class="input" type="email" id="email" name="email" value="{{ form.email }}" required></div>
+    {{ password_field('password', 'Senha') }}
+    <div class="field"><label for="confirm">Confirmar senha</label><input class="input" type="password" id="confirm" name="confirm" required></div>
+    <label class="check"><input type="checkbox" name="is_staff" value="1" {{ 'checked' if form.is_staff }}> Conceder acesso de administrador</label>
+  </div>
+  <div class="card-foot row spread"><a class="btn btn-gray" href="{{ url_for('admin.users') }}">Cancelar</a><button class="btn">Adicionar</button></div>
+</form>
+{% endblock %}

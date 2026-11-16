@@ -1,0 +1,38 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Estoque{% endblock %}
+{% block content %}
+<h1>Gerenciar</h1>
+{% if selected %}
+<div class="grid grid-stock">
+  <form method="post" class="card">
+    {{ csrf() }}
+    <div class="card-head"><span style="font-size:1.1rem">Entrada/Saída de estoque</span></div>
+    <div class="card-body">
+      <div class="field"><label for="product_id">Nome</label>
+        <select id="product_id" name="product_id" onchange="location='?product_id='+this.value">{% for p in products %}<option value="{{ p.id }}" {{ 'selected' if p.id == selected.id }}>{{ p.name }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="type">Selecione Entrada/Saída</label><select id="type" name="type"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></div>
+      <div class="field"><label for="quantity">Quantidade</label><input class="input" type="number" min="1" id="quantity" name="quantity" placeholder="Quantidade" required></div>
+      <div class="field"><label for="note">Observação</label><input class="input" id="note" name="note" placeholder="Ex.: produção do dia, avaria..."></div>
+    </div>
+    <div class="card-foot row spread"><a class="btn btn-gray" href="{{ url_for('admin.products') }}">Cancelar</a><button class="btn">Adicionar</button></div>
+  </form>
+  <div class="card card-body">
+    <div class="grid grid-2">
+      <dl class="info-list" style="margin:0">
+        <dt>Nome do produto</dt><dd>{{ selected.name }}</dd>
+        <dt>Descrição</dt><dd>{{ selected.description }}</dd>
+        <dt>Ingredientes</dt><dd>{{ selected.ingredients or '—' }}</dd>
+        <dt>Preço</dt><dd>{{ selected.price|brl }}</dd>
+        <dt>Estoque</dt><dd><span class="stock-pill {{ 'low' if selected.current_stock <= 5 }}" style="font-size:1.4rem">{{ selected.current_stock }}</span> un.</dd>
+      </dl>
+      <img src="{{ selected.image }}" alt="{{ selected.name }}" class="upload-preview">
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-top:1.25rem">
+  <div class="card-head"><h2 style="margin:0">Últimas movimentações</h2><a class="small" href="{{ url_for('admin.movements', product_id=selected.id) }}">Histórico completo</a></div>
+  {% include "admin/_movements_table.html" %}
+</div>
+{% else %}<div class="card empty">Cadastre um produto primeiro.</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% from "_macros.html" import icon %}
+<div class="table-wrap"><table>
+  <thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Quantidade</th><th>Observação</th><th>Responsável</th></tr></thead>
+  <tbody>{% for m in movements %}
+  <tr class="row-{{ m.type }}"><td class="small nowrap">{{ m.created_at|dt }}</td><td>{{ m.product_name }}</td>
+    <td><span class="status mv-{{ m.type }}">{{ icon('up' if m.type == 'entrada' else 'down') }} {{ 'Entrada' if m.type == 'entrada' else 'Saída' }}</span></td>
+    <td><b style="color:{{ 'var(--success)' if m.type == 'entrada' else 'var(--danger)' }}">{{ '+' if m.type == 'entrada' else '−' }}{{ m.quantity }}</b></td>
+    <td class="small">{{ m.note or '—' }}</td><td class="small">{{ m.by_name or '—' }}</td></tr>
+  {% else %}<tr><td colspan="6" class="empty">Nenhuma movimentação.</td></tr>{% endfor %}</tbody>
+</table></div>

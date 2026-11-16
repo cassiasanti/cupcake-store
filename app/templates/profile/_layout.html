@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block content %}
+<div class="page-head"><h1>{% block heading %}{% endblock %}</h1><span class="breadcrumb"><a href="{{ url_for('shop.index') }}">Home</a> / Minha conta</span></div>
+<div class="panel-grid">
+  <aside class="card">
+    <div class="card-body row"><div class="avatar">{{ current_user.first_name[0]|upper }}</div><div><b>{{ current_user.first_name }} {{ current_user.last_name }}</b><div class="small muted">{{ current_user.email }}</div></div></div>
+    {% set ep = request.endpoint %}
+    <nav class="side-menu" style="padding-bottom:.6rem">
+      <a href="{{ url_for('profile.panel') }}" class="{{ 'active' if ep == 'profile.panel' }}">{{ icon('home') }} Painel</a>
+      <a href="{{ url_for('orders.history') }}">{{ icon('receipt') }} Meus pedidos</a>
+      <a href="{{ url_for('profile.edit') }}" class="{{ 'active' if ep == 'profile.edit' }}">{{ icon('user') }} Detalhes do perfil</a>
+      <a href="{{ url_for('profile.account') }}" class="{{ 'active' if ep == 'profile.account' }}">{{ icon('shield') }} Detalhes da conta</a>
+      <a href="{{ url_for('cart.view') }}">{{ icon('cart') }} Carrinho</a>
+    </nav>
+  </aside>
+  <section class="stack">{% block panel %}{% endblock %}</section>
+</div>
+{% endblock %}

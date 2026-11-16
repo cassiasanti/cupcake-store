@@ -1,0 +1,25 @@
+{% extends "profile/_layout.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Perfil{% endblock %}
+{% block heading %}Detalhes do perfil{% endblock %}
+{% block panel %}
+<form method="post" class="card">
+  {{ csrf() }}
+  <div class="card-body">
+    <div class="form-row">
+      <div class="field"><label for="first_name">Nome</label><input class="input" id="first_name" name="first_name" value="{{ form.first_name or '' }}" required maxlength="100"></div>
+      <div class="field"><label for="last_name">Sobrenome</label><input class="input" id="last_name" name="last_name" value="{{ form.last_name or '' }}" required maxlength="100"></div>
+    </div>
+    <div class="field"><label for="address">Endereço</label><input class="input" id="address" name="address" value="{{ form.address or '' }}" placeholder="Rua, número, complemento" maxlength="200"></div>
+    <div class="form-row">
+      <div class="field"><label for="city">Cidade</label><input class="input" id="city" name="city" value="{{ form.city or '' }}" maxlength="100"></div>
+      <div class="field"><label for="state">Estado</label><input class="input" id="state" name="state" value="{{ form.state or '' }}" maxlength="100" placeholder="UF"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label for="postal_code">CEP</label><input class="input" id="postal_code" name="postal_code" value="{{ form.postal_code or '' }}" data-mask="cep" placeholder="00000-000" inputmode="numeric"></div>
+      <div class="field"><label for="phone_number">Telefone</label><input class="input" id="phone_number" name="phone_number" value="{{ form.phone_number or '' }}" data-mask="phone" placeholder="(11) 99999-9999" inputmode="tel"></div>
+    </div>
+  </div>
+  <div class="card-foot row spread"><a class="btn btn-gray" href="{{ url_for('profile.panel') }}">Cancelar</a><button class="btn">{{ icon('check') }} Salvar alterações</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,31 @@
+@startuml CupcakeStore
+hide methods
+skinparam classAttributeIconSize 0
+
+class users { id; email; password; is_active; is_staff; first_login; last_login; created_at; updated_at; deleted_at }
+class profiles { id; user_id; first_name; last_name; address; city; state; postal_code; phone_number }
+class products { id; name; description; flavor; price; ingredients; image; thumbnail; current_stock; is_active }
+class stocks { id; profile_id; product_id; quantity; type; note }
+class shopping_carts { id; profile_id; total; order_id }
+class shopping_cart_items { id; shopping_cart_id; product_id; item_price; quantity }
+class orders { id; profile_id; shopping_cart_id; status; payment_method; pix_string; pix_transaction_id; is_delivery; delivery_price; total }
+class order_items { id; order_id; product_id; name; item_price; quantity }
+class order_status_history { id; order_id; status; created_at }
+class order_delivery_details { id; order_id; user_*; store_* }
+class store_configs { id; store_name; delivery_price; delivery_is_active; payment_cash_is_active; payment_pix_is_active; pix_key; pix_key_type; cancel_window_minutes; physical_store_* ; opening_hours }
+class audit_logs { id; user_id; entity; entity_id; action; details }
+
+users "1" -- "1" profiles
+profiles "1" -- "0..*" shopping_carts
+profiles "1" -- "0..*" orders
+profiles "1" -- "0..*" stocks
+products "1" -- "0..*" stocks
+shopping_carts "1" *-- "0..*" shopping_cart_items
+products "1" -- "0..*" shopping_cart_items
+shopping_carts "1" -- "0..1" orders
+orders "1" *-- "1..*" order_items
+orders "1" *-- "1..*" order_status_history
+orders "1" *-- "1" order_delivery_details
+products "1" -- "0..*" order_items
+users "1" -- "0..*" audit_logs
+@enduml

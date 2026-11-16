@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Registro{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <div class="card auth-card">
+    <a class="brand" href="{{ url_for('shop.index') }}">{{ icon('cupcake') }} {{ store.store_name }}</a>
+    <p class="subtitle">Registro</p>
+    <form method="post" data-match="password,confirm">
+      {{ csrf() }}
+      <div class="form-row">
+        <div class="field"><label class="sr-only" for="fn">Nome</label><input class="input" id="fn" name="first_name" placeholder="Nome" value="{{ form.first_name }}" required maxlength="100"></div>
+        <div class="field"><label class="sr-only" for="ln">Sobrenome</label><input class="input" id="ln" name="last_name" placeholder="Sobrenome" value="{{ form.last_name }}" required maxlength="100"></div>
+      </div>
+      <div class="field"><label class="sr-only" for="email">E-mail</label>
+        <div class="input-icon"><input class="input" id="email" type="email" name="email" placeholder="Email" value="{{ form.email }}" required maxlength="100" autocomplete="email">{{ icon('at') }}</div></div>
+      <div class="field">
+        <label class="sr-only" for="password">Senha</label>
+        <div class="input-icon"><input class="input" type="password" id="password" name="password" placeholder="Senha" required data-pw-meter autocomplete="new-password">
+          <button type="button" data-toggle-pw aria-label="Mostrar senha">{{ icon('lock') }}</button></div>
+        <div class="pw-meter"><span></span></div>
+        <ul class="pw-rules"><li>8+ caracteres</li><li>Letra maiúscula</li><li>Letra minúscula</li><li>Número</li><li>Caractere especial</li></ul>
+      </div>
+      <div class="field"><label class="sr-only" for="confirm">Confirmar senha</label>
+        <div class="input-icon"><input class="input" type="password" id="confirm" name="confirm" placeholder="Digite a senha novamente" required autocomplete="new-password">
+          <button type="button" data-toggle-pw aria-label="Mostrar senha">{{ icon('lock') }}</button></div></div>
+      <button class="btn btn-block btn-lg">Registrar</button>
+    </form>
+    <a class="link-under" href="{{ url_for('auth.login') }}">Login</a>
+  </div>
+</main>
+{% endblock %}

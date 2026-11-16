@@ -1,0 +1,21 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Usuários{% endblock %}
+{% block content %}
+<div class="row spread"><h1>Usuários</h1><a class="btn" href="{{ url_for('admin.user_new') }}">{{ icon('plus') }} Adicionar usuário</a></div>
+<form class="toolbar" method="get">
+  <div class="field"><label class="small">Buscar</label><input class="input" name="q" value="{{ args.q or '' }}" placeholder="Nome ou e-mail"></div>
+  <div class="field"><label class="small">Status</label><select name="status"><option value="">Todos</option>{% for k, v in [('ativos','Ativos'),('inativos','Inativos'),('admins','Administradores')] %}<option value="{{ k }}" {{ 'selected' if args.status == k }}>{{ v }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="small">Ordenar</label><select name="sort">{% for k, v in [('recentes','Cadastro mais recente'),('antigos','Cadastro mais antigo'),('nome','Nome A-Z')] %}<option value="{{ k }}" {{ 'selected' if args.sort == k }}>{{ v }}</option>{% endfor %}</select></div>
+  <button class="btn">{{ icon('search') }} Filtrar</button>
+</form>
+<div class="card table-wrap"><table>
+  <thead><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Último acesso</th><th>Pedidos</th><th>Perfil</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for u in users %}
+  <tr><td><b>{{ u.first_name }} {{ u.last_name }}</b></td><td>{{ u.email }}</td><td class="small">{{ u.created_at|dt('%d/%m/%Y') }}</td><td class="small">{{ u.last_login|dt }}</td><td>{{ u.orders_count }}</td>
+    <td>{% if u.is_staff %}<span class="tag">Admin</span>{% else %}<span class="small muted">Cliente</span>{% endif %}</td>
+    <td>{% if u.is_active %}<span class="on">Ativo</span>{% else %}<span class="off">Inativo</span>{% endif %}</td>
+    <td class="right"><a class="btn btn-sm btn-ghost" href="{{ url_for('admin.user_detail', user_id=u.id) }}">{{ icon('edit') }} Gerenciar</a></td></tr>
+  {% else %}<tr><td colspan="8" class="empty">Nenhum usuário encontrado.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

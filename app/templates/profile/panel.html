@@ -1,0 +1,32 @@
+{% extends "profile/_layout.html" %}
+{% from "_macros.html" import icon, status %}
+{% block title %}Minha conta{% endblock %}
+{% block heading %}Olá, {{ user.first_name }}!{% endblock %}
+{% block panel %}
+<div class="grid grid-3">
+  <div class="card kpi"><div class="l">Pedidos realizados</div><div class="v">{{ total_orders }}</div></div>
+  <div class="card kpi"><div class="l">Em andamento</div><div class="v">{{ active|length }}</div></div>
+  <div class="card kpi"><div class="l">Total em compras</div><div class="v">{{ spent|brl }}</div></div>
+</div>
+{% if active %}
+<div class="card">
+  <div class="card-head"><h2 style="margin:0">{{ icon('truck') }} Status de entrega</h2></div>
+  <div class="table-wrap"><table><tbody>{% for o in active %}
+    <tr><td><b>#{{ o.id }}</b></td><td>{{ o.created_at|dt }}</td><td>{{ status(o.status) }}</td><td class="right"><a class="btn btn-sm" href="{{ url_for('orders.detail', order_id=o.id) }}">Acompanhar</a></td></tr>
+  {% endfor %}</tbody></table></div>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-head"><h2 style="margin:0">Pedidos recentes</h2><a href="{{ url_for('orders.history') }}" class="small">Ver todos</a></div>
+  {% if recent %}
+  <div class="table-wrap"><table><thead><tr><th>Pedido</th><th>Data</th><th>Status</th><th class="right">Total</th></tr></thead><tbody>
+  {% for o in recent %}<tr><td><a href="{{ url_for('orders.detail', order_id=o.id) }}"><b>#{{ o.id }}</b></a></td><td>{{ o.created_at|dt }}</td><td>{{ status(o.status) }}</td><td class="right">{{ o.total|brl }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty">Nenhum pedido ainda. <a href="{{ url_for('shop.index') }}">Conheça nossos cupcakes!</a></div>{% endif %}
+</div>
+<div class="card card-body">
+  <div class="row spread"><h2 style="margin:0">{{ icon('pin') }} Dados de entrega</h2><a class="btn btn-sm btn-ghost" href="{{ url_for('profile.edit') }}">{{ icon('edit') }} Editar</a></div>
+  {% if user.address %}<p>{{ user.address }} — {{ user.city }}/{{ user.state }} · CEP {{ user.postal_code }}<br>{{ user.phone_number }}</p>
+  {% else %}<p class="inline-alert alert-info">Cadastre seu endereço para receber pedidos em casa.</p>{% endif %}
+</div>
+{% endblock %}

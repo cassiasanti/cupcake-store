@@ -1,0 +1,36 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, status, csrf %}
+{% block title %}Pedido #{{ order.id }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.orders') }}" class="small">{{ icon('arrow-left') }} Pedidos</a>
+<div class="row spread" style="margin:.5rem 0 1.25rem"><h1 style="margin:0">Pedido #{{ order.id }}</h1>{{ status(order.status) }}</div>
+<div class="grid grid-main">
+  <div class="card">
+    <div class="table-wrap"><table>
+      <thead><tr><th>Produto</th><th>Qtd.</th><th>Preço</th><th class="right">Subtotal</th></tr></thead>
+      <tbody>{% for i in items %}<tr><td>{{ i.name }}</td><td>{{ i.quantity }}</td><td>{{ i.item_price|brl }}</td><td class="right">{{ i.subtotal|brl }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <div class="card-body"><div class="totals"><div><span>Entrega</span><span>{{ order.delivery_price|brl }}</span></div><div class="grand"><span>Total</span><span>{{ order.total|brl }}</span></div></div></div>
+  </div>
+  <div class="stack">
+    <div class="card card-body">
+      <h3>Atualizar status</h3>
+      {% if next_status %}
+      <form method="post" class="stack">{{ csrf() }}
+        <select name="status">{% for s in next_status %}<option value="{{ s }}">{{ STATUS_LABELS[s] }}</option>{% endfor %}</select>
+        <button class="btn btn-block" {% if 'cancelado' in next_status %}data-confirm="Se você escolher 'Cancelado', o estoque será devolvido. Confirmar a alteração de status?"{% endif %}>Salvar status</button>
+      </form>
+      {% else %}<p class="muted small">Pedido finalizado — sem próximas etapas.</p>{% endif %}
+      <h3 style="margin-top:1rem">Histórico</h3>
+      <ul class="small">{% for h in history %}<li>{{ h.created_at|dt }} — {{ STATUS_LABELS[h.status] }}</li>{% endfor %}</ul>
+    </div>
+    <div class="card card-body small">
+      <h3>Cliente</h3>
+      <p>{{ order.user_first_name }} {{ order.user_last_name }}<br>{{ order.user_email }}<br>{{ order.user_phone_number or '' }}</p>
+      <h3>{{ 'Entrega' if order.is_delivery else 'Retirada na loja' }}</h3>
+      {% if order.is_delivery %}<p>{{ order.user_address }}<br>{{ order.user_city }}/{{ order.user_state }} — {{ order.user_postal_code }}</p>{% endif %}
+      <h3>Pagamento</h3><p>{{ 'Pix' if order.payment_method == 'pix' else 'Dinheiro' }}{% if order.pix_transaction_id %}<br><span class="muted">TXID {{ order.pix_transaction_id }}</span>{% endif %}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

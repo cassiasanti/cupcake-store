@@ -1,0 +1,94 @@
+{# ---------- Ícones SVG (traço, estilo Lucide) ---------- #}
+{% set ICONS = {
+  'cupcake': '<path d="M5 11h14l-1.5 9h-11z"/><path d="M5 11a3 3 0 0 1 1-5.5A4 4 0 0 1 12 3a4 4 0 0 1 6 2.5A3 3 0 0 1 19 11"/><path d="M9 11l.5 9M15 11l-.5 9"/>',
+  'cart': '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 7H6"/>',
+  'home': '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  'box': '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  'user': '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  'users': '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.5a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',
+  'mail': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  'at': '<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>',
+  'lock': '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0"/><circle cx="12" cy="16" r="1.2"/>',
+  'eye': '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  'clock': '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  'store': '<path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v8h14v-8M10 21v-5h4v5"/>',
+  'receipt': '<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  'dollar': '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M14.5 8.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 5.5v13"/>',
+  'barcode': '<path d="M3 5v14M6 5v14M9 5v14M12 5v14M14 5v14M17 5v14M20 5v14M21 5v14"/>',
+  'warehouse': '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-8h10v8M7 17h10"/>',
+  'settings': '<path d="m14.7 6.3 3 3M4 20l5.5-5.5M15 4l5 5-3 1-6 6-1 3-5-5 3-1 6-6z"/>',
+  'logout': '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  'plus': '<path d="M12 5v14M5 12h14"/>',
+  'trash': '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',
+  'edit': '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m14 6 4 4"/>',
+  'search': '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  'check': '<path d="m5 12 5 5 9-10"/>',
+  'x': '<path d="M6 6l12 12M18 6 6 18"/>',
+  'truck': '<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  'chef': '<path d="M6 13a4 4 0 0 1-1-7.6 5 5 0 0 1 9.5-1.4A4 4 0 0 1 18 13v7H6z"/><path d="M6 17h12"/>',
+  'pin': '<path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  'card': '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
+  'pix': '<path d="m12 2 4 4-4 4-4-4zM12 14l4 4-4 4-4-4zM2 12l4-4 4 4-4 4zM14 12l4-4 4 4-4 4z"/>',
+  'cash': '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+  'menu': '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  'arrow-left': '<path d="M19 12H5M11 18l-6-6 6-6"/>',
+  'chev-left': '<path d="m15 18-6-6 6-6"/>',
+  'chev-right': '<path d="m9 18 6-6-6-6"/>',
+  'up': '<path d="M12 19V5M5 12l7-7 7 7"/>',
+  'down': '<path d="M12 5v14M19 12l-7 7-7-7"/>',
+  'alert': '<path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/>',
+  'copy': '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+  'history': '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>',
+  'shield': '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/>',
+  'phone': '<path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/>',
+  'google': '<path d="M21 12.2c0-.7-.1-1.4-.2-2H12v3.8h5a4.3 4.3 0 0 1-1.9 2.8v2.3h3A9 9 0 0 0 21 12.2z"/><path d="M12 21a8.9 8.9 0 0 0 6.1-2.2l-3-2.3a5.4 5.4 0 0 1-8-2.8H4v2.4A9 9 0 0 0 12 21z"/><path d="M7.1 13.7a5.4 5.4 0 0 1 0-3.4V7.9H4a9 9 0 0 0 0 8.2z"/><path d="M12 6.6a4.9 4.9 0 0 1 3.4 1.3l2.6-2.6A8.7 8.7 0 0 0 12 3a9 9 0 0 0-8 5l3.1 2.4A5.4 5.4 0 0 1 12 6.6z"/>'
+} %}
+
+{% macro icon(name, cls='') -%}
+<svg class="icon {{ cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ ICONS.get(name, '')|safe }}</svg>
+{%- endmacro %}
+
+{% macro status(st) -%}
+<span class="status st-{{ st }}">{{ STATUS_LABELS.get(st, st) }}</span>
+{%- endmacro %}
+
+{% macro flashes() -%}
+{% with messages = get_flashed_messages(with_categories=true) %}
+<div class="flashes" aria-live="polite">
+  {% for cat, msg in messages %}
+  <div class="alert alert-{{ cat if cat in ['success','error','info'] else 'info' }}" role="status"><span>{{ msg }}</span><button type="button" aria-label="Fechar">×</button></div>
+  {% endfor %}
+</div>
+{% endwith %}
+{%- endmacro %}
+
+{% macro csrf() -%}<input type="hidden" name="_csrf" value="{{ csrf_token() }}">{%- endmacro %}
+
+{% macro confirm_dialog() -%}
+<dialog id="confirm-dialog">
+  <div class="card-body">
+    <h2>{{ icon('alert') }} Confirmar ação</h2>
+    <p id="confirm-text" class="muted"></p>
+    <div id="confirm-typed" class="field" hidden>
+      <label>Para confirmar, digite: <b></b></label>
+      <input class="input" autocomplete="off">
+    </div>
+    <div class="row spread" style="margin-top:1rem">
+      <button type="button" class="btn btn-gray" id="confirm-cancel">Voltar</button>
+      <button type="button" class="btn btn-danger" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</dialog>
+{%- endmacro %}
+
+{% macro password_field(name, label, placeholder='') -%}
+<div class="field">
+  <label for="{{ name }}">{{ label }}</label>
+  <div class="input-icon">
+    <input class="input" type="password" id="{{ name }}" name="{{ name }}" placeholder="{{ placeholder }}" required data-pw-meter autocomplete="new-password">
+    <button type="button" data-toggle-pw aria-label="Mostrar senha">{{ icon('eye') }}</button>
+  </div>
+  <div class="pw-meter"><span></span></div>
+  <ul class="pw-rules"><li>8+ caracteres</li><li>Letra maiúscula</li><li>Letra minúscula</li><li>Número</li><li>Caractere especial</li></ul>
+</div>
+{%- endmacro %}

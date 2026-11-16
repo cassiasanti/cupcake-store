@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, status, csrf %}
+{% block title %}Pedido #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Pedido #{{ order.id }}</h1><span class="muted">Realizado em {{ order.created_at|dt }}</span></div>
+  <span class="breadcrumb"><a href="{{ url_for('orders.history') }}">Pedidos</a> / #{{ order.id }}</span>
+</div>
+
+{% if novo %}<div class="inline-alert alert-success" style="margin-bottom:1rem">{{ icon('check') }} <b>Obrigado pela compra!</b> Seu pedido foi registrado{% if order.status == 'aguardando_pagamento' %} — conclua o pagamento Pix abaixo{% endif %}.</div>{% endif %}
+
+<div class="card card-body" style="margin-bottom:1.25rem">
+  <div class="row spread"><h2 style="margin:0">Acompanhamento</h2>{{ status(order.status) }}</div>
+  {% if order.status == 'cancelado' %}
+    <p class="off" style="margin:1rem 0 0">Este pedido foi cancelado{% if history|selectattr('status','equalto','pago')|list %} — o reembolso do Pix foi solicitado{% endif %}.</p>
+  {% else %}
+    {% set idx = flow.index(order.status) %}
+    {% set labels = {'aguardando_pagamento':'Pedido feito','pago':'Pagamento','em_preparo':'Em preparo','enviado':'Saiu p/ entrega' if order.is_delivery else 'Pronto p/ retirada','entregue':'Entregue'} %}
+    {% set icons = {'aguardando_pagamento':'receipt','pago':'dollar','em_preparo':'chef','enviado':'truck','entregue':'check'} %}
+    <div class="timeline">
+      {% for st in flow %}<div class="step {{ 'done' if loop.index0 <= idx or (st == 'pago' and order.payment_method == 'dinheiro' and idx >= 2) }} {{ 'current' if loop.index0 == idx }}"><div class="dot">{{ icon(icons[st]) }}</div>{{ labels[st] }}</div>{% endfor %}
+    </div>
+  {% endif %}
+  <details style="margin-top:.8rem"><summary class="small muted" style="cursor:pointer">Histórico de status</summary>
+    <ul class="small">{% for h in history %}<li>{{ h.created_at|dt }} — {{ STATUS_LABELS[h.status] }}</li>{% endfor %}</ul></details>
+</div>
+
+{% if order.status == 'aguardando_pagamento' and order.payment_method == 'pix' %}
+<div class="pix-box" style="margin-bottom:1.25rem">
+  {% if qr %}{{ qr|safe }}{% endif %}
+  <div class="stack">
+    <h2 style="margin:0">{{ icon('pix') }} Pague com Pix</h2>
+    <p class="muted" style="margin:0">Escaneie o QR Code ou use o código copia e cola. Valor: <b>{{ order.total|brl }}</b></p>
+    <div class="pix-code" id="pix-code">{{ order.pix_string }}</div>
+    <div class="row">
+      <button type="button" class="btn btn-ghost btn-sm" data-copy="#pix-code">{{ icon('copy') }} Copiar código</button>
+      <form method="post" action="{{ url_for('orders.pay', order_id=order.id) }}">{{ csrf() }}<button class="btn btn-success btn-sm">{{ icon('check') }} Já paguei (simular confirmação)</button></form>
+    </div>
+    <p class="hint">Ambiente acadêmico: a confirmação do banco é simulada pelo botão acima.</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="grid grid-main">
+  <div class="card">
+    <div class="card-head"><h2 style="margin:0">Itens</h2></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Produto</th><th>Qtd.</th><th>Preço</th><th class="right">Subtotal</th></tr></thead>
+      <tbody>{% for i in items %}<tr><td><div class="cell-product">{% if i.image %}<img class="thumb-sm" src="{{ i.image }}" alt="">{% endif %}<b>{{ i.name }}</b></div></td><td>{{ i.quantity }}</td><td>{{ i.item_price|brl }}</td><td class="right">{{ i.subtotal|brl }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <div class="card-body"><div class="totals">
+      <div><span>Subtotal</span><span>{{ (order.total - order.delivery_price)|brl }}</span></div>
+      <div><span>Entrega</span><span>{{ order.delivery_price|brl }}</span></div>
+      <div class="grand"><span>Total</span><span>{{ order.total|brl }}</span></div>
+    </div></div>
+  </div>
+  <div class="stack">
+    <div class="card card-body">
+      <h3>{{ icon('truck' if order.is_delivery else 'store') }} {{ 'Entrega' if order.is_delivery else 'Retirada na loja' }}</h3>
+      {% if order.is_delivery %}
+        <p class="small">{{ order.user_first_name }} {{ order.user_last_name }}<br>{{ order.user_address }}<br>{{ order.user_city }}/{{ order.user_state }} — {{ order.user_postal_code }}<br>{{ order.user_phone_number }}</p>
+      {% else %}
+        <p class="small">{{ order.store_address }}<br>{{ order.store_city }}/{{ order.store_state }} — {{ order.store_postal_code }}<br>{{ order.store_phone_number }}</p>
+      {% endif %}
+      <h3>{{ icon('card') }} Pagamento</h3>
+      <p class="small">{{ 'Pix' if order.payment_method == 'pix' else 'Dinheiro na entrega/retirada' }}</p>
+    </div>
+    {% if can_cancel %}
+    <form method="post" action="{{ url_for('orders.cancel', order_id=order.id) }}" class="card card-body">
+      {{ csrf() }}
+      <h3>Precisa cancelar?</h3>
+      <p class="small muted">É possível cancelar até {{ store.cancel_window_minutes }} min após a compra e antes do envio. O estoque é devolvido{% if order.status == 'pago' %} e o Pix reembolsado{% endif %}.</p>
+      <button class="btn btn-danger btn-block" data-confirm="Tem certeza que deseja cancelar o pedido #{{ order.id }}? Esta ação não pode ser desfeita.">{{ icon('x') }} Cancelar pedido</button>
+    </form>
+    {% elif order.status in ['aguardando_pagamento','pago','em_preparo'] %}
+    <div class="card card-body small muted">O prazo para cancelamento pelo site expirou. Fale com a loja: {{ store.physical_store_phone_number }}.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

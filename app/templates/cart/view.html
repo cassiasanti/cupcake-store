@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Carrinho{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Carrinho</h1><span class="breadcrumb"><a href="{{ url_for('shop.index') }}">Home</a> / Carrinho</span></div>
+{% if items %}
+<div class="card">
+  <div class="table-wrap"><table>
+    <thead><tr><th>Produto</th><th>Preço</th><th>Quantidade</th><th class="right">Subtotal</th><th></th></tr></thead>
+    <tbody>
+    {% for i in items %}
+      <tr>
+        <td><div class="cell-product"><img class="thumb-sm" src="{{ i.image }}" alt=""><div><a href="{{ url_for('shop.detail', product_id=i.product_id) }}"><b>{{ i.name }}</b></a><div class="small muted">{{ i.flavor }}{% if i.quantity > i.current_stock %} · <span class="off">só {{ i.current_stock }} em estoque</span>{% endif %}</div></div></div></td>
+        <td class="nowrap">{{ i.item_price|brl }}</td>
+        <td>
+          <form method="post" action="{{ url_for('cart.update', item_id=i.id) }}">
+            {{ csrf() }}
+            <div class="qty" data-autosubmit><button type="button" data-step="-1" aria-label="Diminuir">−</button>
+              <input type="number" name="quantity" value="{{ i.quantity }}" min="1" max="{{ i.current_stock }}" aria-label="Quantidade" onchange="this.form.submit()">
+              <button type="button" data-step="1" aria-label="Aumentar">+</button></div>
+          </form>
+        </td>
+        <td class="right nowrap"><b>{{ i.subtotal|brl }}</b></td>
+        <td class="right">
+          <form method="post" action="{{ url_for('cart.remove', item_id=i.id) }}">{{ csrf() }}
+            <button class="btn btn-sm btn-ghost" aria-label="Remover {{ i.name }}" title="Remover">{{ icon('trash') }}</button></form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <div class="card-foot row spread">
+    <a href="{{ url_for('shop.index') }}">{{ icon('arrow-left') }} Continuar comprando</a>
+    <div class="row"><span class="muted">Total dos produtos</span><b style="font-size:1.3rem">{{ total|brl }}</b>
+      <a class="btn btn-success btn-lg" href="{{ url_for('orders.checkout') }}">Finalizar compra</a></div>
+  </div>
+</div>
+{% else %}
+<div class="card empty">{{ icon('cart') }}<h2>Seu carrinho está vazio</h2><p>Que tal escolher um cupcake delicioso?</p>
+  <a class="btn" href="{{ url_for('shop.index') }}">Ir para a loja</a></div>
+{% endif %}
+{% endblock %}

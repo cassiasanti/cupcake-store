@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Login{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <div class="card auth-card">
+    <a class="brand" href="{{ url_for('shop.index') }}">{{ icon('cupcake') }} {{ store.store_name }}</a>
+    <p class="subtitle">Login</p>
+    <form method="post" novalidate>
+      {{ csrf() }}
+      <div class="field">
+        <label class="sr-only" for="email">E-mail</label>
+        <div class="input-icon"><input class="input" id="email" type="email" name="email" placeholder="Email" value="{{ email }}" required autofocus autocomplete="email">{{ icon('at') }}</div>
+      </div>
+      <div class="field">
+        <label class="sr-only" for="password">Senha</label>
+        <div class="input-icon"><input class="input" id="password" type="password" name="password" placeholder="Senha" required autocomplete="current-password">
+          <button type="button" data-toggle-pw aria-label="Mostrar senha">{{ icon('lock') }}</button></div>
+      </div>
+      <button class="btn btn-block btn-lg">Entrar</button>
+    </form>
+    <div class="divider">ou continue com</div>
+    <div class="social">
+      <button class="btn btn-ghost btn-sm" disabled title="Disponível em versão futura">{{ icon('google') }} Google</button>
+      <button class="btn btn-ghost btn-sm" disabled title="Disponível em versão futura">{{ icon('phone') }} Telefone</button>
+    </div>
+    <a class="link-under" href="{{ url_for('auth.register') }}">Registrar</a>
+    <div class="demo-box"><b>Contas de demonstração</b><br>Admin: admin@cupcakestore.com / Admin@123<br>Cliente: cliente@email.com / Cliente@123</div>
+  </div>
+</main>
+{% endblock %}

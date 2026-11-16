@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Loja{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Loja</h1>
+  <span class="breadcrumb"><a href="{{ url_for('shop.index') }}">Home</a> / Loja</span>
+</div>
+
+<div class="filters" role="group" aria-label="Filtrar por sabor">
+  <a class="chip {{ 'active' if not flavor }}" href="{{ url_for('shop.index', q=search or None) }}">Todos</a>
+  {% for f in flavors %}
+  <a class="chip {{ 'active' if f == flavor }}" href="{{ url_for('shop.index', sabor=f, q=search or None) }}">{{ f }}</a>
+  {% endfor %}
+  <form class="search" method="get">
+    {% if flavor %}<input type="hidden" name="sabor" value="{{ flavor }}">{% endif %}
+    <input class="input" type="search" name="q" value="{{ search }}" placeholder="Buscar cupcake..." aria-label="Buscar">
+    <button class="btn btn-sm" aria-label="Buscar">{{ icon('search') }}</button>
+  </form>
+</div>
+
+{% set c = catalog %}
+<div class="pager">
+  <span>Página {{ c.page }} de {{ c.pages }} - Mostrando {{ c['items']|length }} de {{ c.total }} resultado(s).</span>
+  <nav class="pager-nav" aria-label="Paginação">
+    {% if c.page > 1 %}<a href="{{ url_for('shop.index', page=c.page-1, sabor=flavor or None, q=search or None) }}" aria-label="Anterior">{{ icon('chev-left') }}</a>{% else %}<span class="disabled">{{ icon('chev-left') }}</span>{% endif %}
+    {% for p in range(1, c.pages + 1) %}
+      {% if p == c.page %}<span class="current">{{ p }}</span>{% else %}<a href="{{ url_for('shop.index', page=p, sabor=flavor or None, q=search or None) }}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if c.page < c.pages %}<a href="{{ url_for('shop.index', page=c.page+1, sabor=flavor or None, q=search or None) }}" aria-label="Próxima">{{ icon('chev-right') }}</a>{% else %}<span class="disabled">{{ icon('chev-right') }}</span>{% endif %}
+  </nav>
+</div>
+
+{% if c['items'] %}
+<div class="products">
+  {% for p in c['items'] %}
+  <article class="product">
+    <a class="thumb" href="{{ url_for('shop.detail', product_id=p.id) }}"><img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy"></a>
+    <h3><a href="{{ url_for('shop.detail', product_id=p.id) }}">{{ p.name }}</a></h3>
+    <p class="desc">{{ p.description }}</p>
+    <div class="price">{{ p.price|brl }}</div>
+    {% if p.current_stock <= 0 %}
+      <div class="stock-low">Esgotado</div>
+      <form><button class="btn btn-block btn-gray" disabled>Indisponível</button></form>
+    {% else %}
+      {% if p.current_stock <= 5 %}<div class="stock-low">Últimas {{ p.current_stock }} unidades!</div>{% endif %}
+      <form class="js-add-cart" method="post" action="{{ url_for('cart.add', product_id=p.id) }}">
+        {{ csrf() }}<input type="hidden" name="quantity" value="1"><input type="hidden" name="next" value="{{ request.full_path }}">
+        <button type="submit" class="btn btn-block" data-label="Adicionar ao carrinho">Adicionar ao carrinho</button>
+      </form>
+    {% endif %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">{{ icon('search') }}<p>Nenhum cupcake encontrado{% if flavor %} com sabor <b>{{ flavor }}</b>{% endif %}{% if search %} para "<b>{{ search }}</b>"{% endif %}.</p>
+  <a class="btn btn-sm" href="{{ url_for('shop.index') }}">Ver todos</a></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Detalhes do produto</h1>
+  <span class="breadcrumb"><a href="{{ url_for('shop.index') }}">Home</a> / <a href="{{ url_for('shop.index', sabor=product.flavor) }}">{{ product.flavor }}</a> / {{ product.name }}</span>
+</div>
+<div class="card card-body detail">
+  <div class="photo"><img src="{{ product.image }}" alt="{{ product.name }}"></div>
+  <div>
+    <span class="tag">{{ product.flavor }}</span>
+    <h2 style="font-size:1.8rem;margin-top:.6rem">{{ product.name }}</h2>
+    <div class="price">{{ product.price|brl }}</div>
+    <dl class="info-list">
+      <dt>Descrição</dt><dd>{{ product.description }}</dd>
+      {% if product.ingredients %}<dt>Ingredientes</dt><dd>{{ product.ingredients }}</dd>{% endif %}
+      <dt>Disponibilidade</dt>
+      <dd>{% if product.current_stock > 0 %}<span class="on">{{ product.current_stock }} em estoque</span>{% else %}<span class="off">Esgotado</span>{% endif %}</dd>
+    </dl>
+    {% if product.current_stock > 0 %}
+    <form class="js-add-cart row" method="post" action="{{ url_for('cart.add', product_id=product.id) }}" style="margin-top:1.6rem">
+      {{ csrf() }}
+      <div class="qty"><button type="button" data-step="-1" aria-label="Diminuir">−</button>
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.current_stock }}" aria-label="Quantidade">
+        <button type="button" data-step="1" aria-label="Aumentar">+</button></div>
+      <button type="submit" class="btn btn-lg" data-label="Adicionar ao carrinho">{{ icon('cart') }} Adicionar ao carrinho</button>
+    </form>
+    {% endif %}
+    <p style="margin-top:1.5rem"><a href="{{ url_for('shop.index') }}">{{ icon('arrow-left') }} Continuar comprando</a></p>
+  </div>
+</div>
+{% endblock %}

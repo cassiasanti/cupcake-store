@@ -1,0 +1,25 @@
+{% extends "profile/_layout.html" %}
+{% from "_macros.html" import icon, csrf, password_field %}
+{% block title %}Conta{% endblock %}
+{% block heading %}Detalhes da conta{% endblock %}
+{% block panel %}
+<form method="post" class="card">
+  {{ csrf() }}<input type="hidden" name="action" value="email">
+  <div class="card-head"><h2 style="margin:0">{{ icon('mail') }} E-mail de acesso</h2></div>
+  <div class="card-body">
+    <div class="field"><label for="email">E-mail</label><input class="input" type="email" id="email" name="email" value="{{ user.email }}" required></div>
+    <p class="small muted">Último acesso: {{ user.last_login|dt }} · Cliente desde {{ user.created_at|dt('%d/%m/%Y') }}</p>
+  </div>
+  <div class="card-foot right"><button class="btn">Atualizar e-mail</button></div>
+</form>
+<form method="post" class="card" data-match="new,confirm">
+  {{ csrf() }}<input type="hidden" name="action" value="password">
+  <div class="card-head"><h2 style="margin:0">{{ icon('lock') }} Alterar senha</h2></div>
+  <div class="card-body">
+    <div class="field"><label for="current">Senha atual</label><input class="input" type="password" id="current" name="current" required autocomplete="current-password"></div>
+    {{ password_field('new', 'Nova senha') }}
+    <div class="field"><label for="confirm">Confirmar nova senha</label><input class="input" type="password" id="confirm" name="confirm" required autocomplete="new-password"></div>
+  </div>
+  <div class="card-foot right"><button class="btn">Alterar senha</button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Produtos{% endblock %}
+{% block content %}
+<div class="row spread"><h1>Produtos</h1><a class="btn" href="{{ url_for('admin.product_new') }}">{{ icon('plus') }} Adicionar produto</a></div>
+<form class="toolbar" method="get">
+  <div class="field"><label class="small">Buscar</label><input class="input" name="q" value="{{ args.q or '' }}" placeholder="Nome ou sabor"></div>
+  <div class="field"><label class="small">Ordenar</label><select name="sort">{% for k, v in [('nome','Nome'),('preco','Preço'),('estoque','Estoque'),('recentes','Mais recentes')] %}<option value="{{ k }}" {{ 'selected' if args.sort == k }}>{{ v }}</option>{% endfor %}</select></div>
+  <button class="btn">{{ icon('search') }} Filtrar</button>
+</form>
+<div class="card table-wrap"><table>
+  <thead><tr><th>Produto</th><th>Sabor</th><th>Preço</th><th>Estoque</th><th>Publicado</th><th class="right">Ações</th></tr></thead>
+  <tbody>{% for p in products %}
+  <tr><td><div class="cell-product"><img class="thumb-sm" src="{{ p.image }}" alt=""><div><b>{{ p.name }}</b><div class="small muted">Atualizado {{ p.updated_at|dt }}</div></div></div></td>
+    <td><span class="tag">{{ p.flavor }}</span></td><td class="nowrap">{{ p.price|brl }}</td>
+    <td><span class="stock-pill {{ 'low' if p.current_stock <= 5 }}">{{ p.current_stock }}</span></td>
+    <td>{% if p.is_active %}<span class="on">Sim</span>{% else %}<span class="off">Não</span>{% endif %}</td>
+    <td class="right nowrap">
+      <a class="btn btn-sm btn-ghost" href="{{ url_for('admin.stock', product_id=p.id) }}" title="Estoque">{{ icon('warehouse') }}</a>
+      <a class="btn btn-sm btn-ghost" href="{{ url_for('admin.product_edit', product_id=p.id) }}" title="Editar">{{ icon('edit') }}</a>
+      <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}" style="display:inline">{{ csrf() }}<input type="hidden" name="confirm_name">
+        <button class="btn btn-sm btn-ghost" title="Excluir" style="color:var(--danger)" data-confirm="Excluir '{{ p.name }}' do catálogo? A exclusão é irreversível e o item sai dos carrinhos abertos." data-confirm-type="{{ p.name }}">{{ icon('trash') }}</button></form>
+    </td></tr>
+  {% else %}<tr><td colspan="6" class="empty">Nenhum produto cadastrado.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

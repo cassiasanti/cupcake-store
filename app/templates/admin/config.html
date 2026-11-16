@@ -1,0 +1,44 @@
+{% extends "admin/_layout.html" %}
+{% from "_macros.html" import icon, csrf %}
+{% block title %}Configurar loja{% endblock %}
+{% block content %}
+<h1>Configurar loja</h1>
+<div class="filters">
+  <a class="chip {{ 'active' if section == 'endereco' }}" href="{{ url_for('admin.config', section='endereco') }}">Endereço</a>
+  <a class="chip {{ 'active' if section == 'pagamento' }}" href="{{ url_for('admin.config', section='pagamento') }}">Pagamento</a>
+  <a class="chip {{ 'active' if section == 'entrega' }}" href="{{ url_for('admin.config', section='entrega') }}">Entrega</a>
+</div>
+<form method="post" class="card" style="max-width:720px">
+  {{ csrf() }}
+  <div class="card-body">
+  {% if section == 'endereco' %}
+    <div class="field"><label>Nome da loja</label><input class="input" name="store_name" value="{{ cfg.store_name or '' }}" required></div>
+    <div class="field"><label>E-mail</label><input class="input" type="email" name="physical_store_email" value="{{ cfg.physical_store_email or '' }}"></div>
+    <div class="field"><label>Endereço</label><input class="input" name="physical_store_address" value="{{ cfg.physical_store_address or '' }}"></div>
+    <div class="form-row">
+      <div class="field"><label>Cidade</label><input class="input" name="physical_store_city" value="{{ cfg.physical_store_city or '' }}"></div>
+      <div class="field"><label>Estado</label><input class="input" name="physical_store_state" value="{{ cfg.physical_store_state or '' }}"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>CEP</label><input class="input" name="physical_store_postal_code" value="{{ cfg.physical_store_postal_code or '' }}" data-mask="cep"></div>
+      <div class="field"><label>Telefone</label><input class="input" name="physical_store_phone_number" value="{{ cfg.physical_store_phone_number or '' }}" data-mask="phone"></div>
+    </div>
+    <div class="field"><label>Horário de funcionamento</label><input class="input" name="opening_hours" value="{{ cfg.opening_hours or '' }}" placeholder="Seg a Sáb, 9h às 19h"></div>
+  {% elif section == 'pagamento' %}
+    <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="payment_pix_is_active" value="1" {{ 'checked' if cfg.payment_pix_is_active }}> {{ icon('pix') }} Aceitar Pix</label>
+    <div class="form-row">
+      <div class="field"><label>Tipo da chave Pix</label><select name="pix_key_type"><option value="">Selecione</option>{% for k in key_types %}<option value="{{ k }}" {{ 'selected' if cfg.pix_key_type == k }}>{{ k|capitalize }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Chave Pix</label><input class="input" name="pix_key" value="{{ cfg.pix_key or '' }}"></div>
+    </div>
+    <label class="check"><input type="checkbox" name="payment_cash_is_active" value="1" {{ 'checked' if cfg.payment_cash_is_active }}> {{ icon('cash') }} Aceitar dinheiro na entrega/retirada</label>
+  {% else %}
+    <label class="check" style="margin-bottom:1rem"><input type="checkbox" name="delivery_is_active" value="1" {{ 'checked' if cfg.delivery_is_active }}> {{ icon('truck') }} Oferecer entrega em domicílio</label>
+    <div class="form-row">
+      <div class="field"><label>Taxa de entrega (R$)</label><input class="input" name="delivery_price" value="{{ '%.2f'|format(cfg.delivery_price) }}" inputmode="decimal"></div>
+      <div class="field"><label>Prazo para cancelamento (min)</label><input class="input" type="number" min="0" name="cancel_window_minutes" value="{{ cfg.cancel_window_minutes }}"><span class="hint">0 = sem limite de tempo (até o envio)</span></div>
+    </div>
+  {% endif %}
+  </div>
+  <div class="card-foot right"><button class="btn">{{ icon('check') }} Salvar</button></div>
+</form>
+{% endblock %}
